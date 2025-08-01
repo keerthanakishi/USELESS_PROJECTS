@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Time Goblin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap');
+
+    body {
+      font-family: 'Rock Salt', cursive;
+      background: #d6f5d6;
+      color: #3e3e3e;
+      text-align: center;
+      padding: 30px;
+    }
+  h1 {
+    font-size: 3.5em;
+    color: #3b5c3b;
+    text-shadow: 1px 1px 5px #a5c9a5;
+    margin-bottom: 0;
+  }
+
+    h3 {
+      color: #517451;
+      font-weight: 400;
+      margin-top: 10px;
+      margin-bottom: 30px;
+    }
+
+    #webcam-container canvas {
+      border: 4px solid #7fbf7f;
+      border-radius: 12px;
+      margin-top: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    #timer-display {
+      font-size: 48px;
+      margin: 30px 0;
+      color: #228b22;
+      text-shadow: 0 0 6px #aaffaa;
+      font-weight: bold;
+    }
+
+    .sass-box {
+      margin-top: 20px;
+      font-style: italic;
+      color: #2e7031;
+      font-size: 1.3em;
+      padding: 0 20px;
+    }
+
+    .goblin {
+      width: 180px;
+      height: auto;
+      margin-top: 10px;
+      animation: bounce 3s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .magic-anim {
+      position: absolute;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 200px;
+      pointer-events: none;
+    }
+
+    #label-container div {
+      font-size: 14px;
+      color: #3c573c;
+      margin: 5px;
+    }
+    #controls {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+#controls button {
+  padding: 12px 24px;
+  font-family: 'Caveat', cursive;
+  font-size: 20px;
+  background-color: #4caf50;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+#controls button:hover {
+  transform: scale(1.1);
+  background-color: #388e3c;
+}
+
+  </style>
+</head>
+<body>
+  <h1>The Time Goblin</h1>
+  <h3>Mischievous, magical, and always judging your gestures</h3>
+
+  <img src="logo.png" class="goblin" alt="Goblin Mascot">
+  <div id="controls">
+  <button onclick="startTimer()">Start</button>
+  <button onclick="stopTimer()">Stop</button>
+  <button onclick="resetTimer()">Reset</button>
+</div>
+
+
+
+  <div id="webcam-container"></div>
+  <div id="label-container"></div>
+  <div id="timer-display"> 00:00 </div>
+  <div class="sass-box" id="sass">Summon me with flair... or not at all.</div>
+  <canvas class="magic-anim" id="magicEffect"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
+  <script>
+    let timer;
+let seconds = 0;
+
+function updateDisplay() {
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  document.getElementById("timer").textContent =
+    `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+function startTimer() {
+  if (timer) return; // prevent multiple intervals
+  timer = setInterval(() => {
+    seconds++;
+    updateDisplay();
+  }, 1000);
+  const goblinLaugh = new Audio("goblin-laugh.mp3");
+
+function startTimer() {
+  if (timer) return;
+  goblinLaugh.play();  // Mischief begins
+  timer = setInterval(() => {
+    seconds++;
+    updateDisplay();
+  }, 1000);
+}
+
+}
+
+function stopTimer() {
+  clearInterval(timer);
+  timer = null;
+}
+
+function resetTimer() {
+  stopTimer();
+  seconds = 0;
+  updateDisplay();
+}
+
+    const URL = "YOUR_MODEL_URL_HERE";
+    let model, webcam, labelContainer, maxPredictions;
+    let magicCtx;
+
+    async function init() {
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
+
+      model = await tmImage.load(modelURL, metadataURL);
+      maxPredictions = model.getTotalClasses();
+
+      webcam = new tmImage.Webcam(200, 200, true);
+      await webcam.setup();
+      await webcam.play();
+      window.requestAnimationFrame(loop);
+
+      document.getElementById("webcam-container").appendChild(webcam.canvas);
+      labelContainer = document.getElementById("label-container");
+      for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+      }
+
+      magicCtx = document.getElementById("magicEffect").getContext("2d");
+      sassGoblin("I'm awake. Ugh, what now?");
+    }
+
+    async function loop() {
+      webcam.update();
+      await predict();
+      window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+      const prediction = await model.predict(webcam.canvas);
+      let highest = { className: "", probability: 0 };
+
+      prediction.forEach(p => {
+        if (p.probability > highest.probability) {
+          highest = p;
+        }
+      });
+
+      for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction =
+          prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(1) + "%";
+        labelContainer.childNodes[i].innerHTML = classPrediction;
+      }
+
+      if (highest.probability > 0.90) {
+        handleGesture(highest.className);
+      }
+    }
+
+    function handleGesture(label) {
+      console.log("Gesture spotted:", label);
+      triggerMagicEffect();
+
+      if (label === "slap-start") {
+        sassGoblin("Ugh, fine. One minute for your nonsense.");
+        startTimer(60);
+        playSound('zap');
+      } else if (label === "swirl") {
+        sassGoblin("Summoning a demon again? Classic.");
+        playSound('bubble');
+      } else if (label === "rage-reset") {
+        sassGoblin("Resetting everything! Satisfied now?");
+        resetTimer();
+        playSound('groan');
+      } else if (label.startsWith("digit-")) {
+        const num = parseInt(label.split("-")[1]);
+        sassGoblin(`A pathetic little ${num}? Cute.`);
+        startTimer(num * 60);
+        playSound('giggle');
+      } else if (label === "improv") {
+        sassGoblin("What even was that? Bravo, mortal. BRAVO!");
+        playSound('laugh');
+      }
+    }
+
+    function startTimer(duration) {
+      let timer = duration;
+      clearInterval(window.timerInterval);
+      window.timerInterval = setInterval(() => {
+        const mins = String(Math.floor(timer / 60)).padStart(2, '0');
+        const secs = String(timer % 60).padStart(2, '0');
+        document.getElementById("timer-display").textContent = `${mins}:${secs}`;
+        if (--timer < 0) {
+          clearInterval(window.timerInterval);
+          sassGoblin("Time's up. I hope it was worth it.");
+          playSound('zap');
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(window.timerInterval);
+      document.getElementById("timer-display").textContent = "00:00";
+    }
+
+    function sassGoblin(text) {
+      document.getElementById("sass").textContent = text;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.pitch = 0.7;
+      utterance.rate = 1;
+      utterance.voice = speechSynthesis.getVoices().find(v => v.name.toLowerCase().includes("english"));
+      speechSynthesis.speak(utterance);
+    }
+
+    function playSound(type) {
+      const sounds = {
+        zap: "https://freesound.org/data/previews/341/341695_3248244-lq.mp3",
+        groan: "https://freesound.org/data/previews/522/522590_11768140-lq.mp3",
+        bubble: "https://freesound.org/data/previews/512/512193_10270349-lq.mp3",
+        giggle: "https://freesound.org/data/previews/499/499983_10270349-lq.mp3",
+        laugh: "https://freesound.org/data/previews/218/218201_4082826-lq.mp3"
+      };
+      const audio = new Audio(sounds[type]);
+      audio.play();
+    }
+
+    function triggerMagicEffect() {
+      const ctx = magicCtx;
+      ctx.clearRect(0, 0, 200, 200);
+      ctx.fillStyle = `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, 255, 0.7)`;
+      ctx.beginPath();
+      ctx.arc(100, 100, 50 + Math.random()*20, 0, 2 * Math.PI);
+      ctx.fill();
+      setTimeout(() => ctx.clearRect(0, 0, 200, 200), 400);
+    }
+
+    init();
+  </script>
+</body>
+</html>
+
