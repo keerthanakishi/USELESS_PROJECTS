@@ -1,28 +1,38 @@
 let timerInterval;
-let secondsRemaining = 0;
+let secondsRemaining = 60;
+let isRunning = false;
 
 function startTimer(duration = 60) {
+  if (isRunning) return;
   clearInterval(timerInterval);
   secondsRemaining = duration;
   updateDisplay();
+  isRunning = true;
+
+  speak("The countdown begins, mortal!");
+
   timerInterval = setInterval(() => {
     secondsRemaining--;
     updateDisplay();
     if (secondsRemaining <= 0) {
       clearInterval(timerInterval);
+      isRunning = false;
       speak("Time’s up, mortal!");
     }
   }, 1000);
 }
 
 function stopTimer() {
+  if (!isRunning) return;
   clearInterval(timerInterval);
-  speak("Stopping the countdown, are you scared?");
+  isRunning = false;
+  speak("Stopping the countdown. Are you scared?");
 }
 
 function resetTimer() {
   clearInterval(timerInterval);
-  secondsRemaining = 0;
+  secondsRemaining = 60;
+  isRunning = false;
   updateDisplay();
   speak("Back to zero. Try harder!");
 }
@@ -36,5 +46,9 @@ function updateDisplay() {
 
 function speak(text) {
   const utterance = new SpeechSynthesisUtterance(text);
+  utterance.pitch = 0.8;
+  utterance.rate = 1;
   speechSynthesis.speak(utterance);
 }
+
+document.addEventListener("DOMContentLoaded", updateDisplay);
