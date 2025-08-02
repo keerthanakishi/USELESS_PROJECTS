@@ -29,31 +29,23 @@ Introducing **The Time Goblin** — a passive-aggressive magical creature who de
 For Hardware:
 - None (but could pair with webcam and motion sensor for hardware interaction)
 
-
-### Implementation
-For Software:
-# Installation
-```bash
-https://github.com/keerthanakishi/USELESS_PROJECTS.git
-
-
-
 ### Project Documentation
 For Software:
 
 # Screenshots (Add at least 3)
-![[Screenshot1](https://github.com/keerthanakishi/USELESS_PROJECTS.git)](HOME PAGE OF THE TIME GOBLIN)
+![[Screenshot1](https://drive.google.com/file/d/1tOXrowhARXr6HoAQZaIZUDULOPSoU910/view?usp=drive_link)](This is the home page of the website)
 *Add caption explaining what this shows*
 
-![[Screenshot2](https://drive.google.com/file/d/13wYH2RoVx0tWrezmBSarUeSyVlzqlIHN/view?usp=drive_link)](The basic timer working)
+![[Screenshot2](https://drive.google.com/file/d/13wYH2RoVx0tWrezmBSarUeSyVlzqlIHN/view?usp=drive_link)](This is the basic timer running on the page)
 *Add caption explaining what this shows*
-
 
 
 ### Project Demo
 # Video
-[[Add your demo video link here](https://drive.google.com/file/d/1LmFhy_0waF2HH7-LDZMHszDsCpuIC_t-/view?usp=sharing)]
-*This video shows just the basic timer working in the page*
+[[Add your demo video link here](https://drive.google.com/file/d/1LmFhy_0waF2HH7-LDZMHszDsCpuIC_t-/view?usp=drive_link)]
+This is the demo video of  basic timer which runs on the page
+
+
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
